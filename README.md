@@ -12,40 +12,20 @@ Zephyr is a small open-source real-time operating system (RTOS) for microcontrol
 
 ## Topics
 
-Sensor_Integration: how to connect an I2C sensor to a Zephyr project and read its data. It covers the devicetree (nodes, labels, aliases, compatible strings), the overlay file, the driver settings in prj.conf, and reading the sensor in main.c. Projects: ADXL345, MPU6050 and both sensors together.
+### Sensor Integration
 
-Threads: how to create and run multiple threads in Zephyr.
+How to connect an I2C sensor to a Zephyr project and read its data.
 
-- Semaphore: how to make threads take turns. It includes a basic example with two threads and a project that reads two accelerometers (ADXL345 and MPU6050) from two threads.
+- Devicetree: nodes, labels, aliases and compatible strings
+- Overlay file: adding a sensor without editing the board file
+- prj.conf: turning on the sensor driver
+- main.c: reading the sensor with the sensor API
+- Projects: ADXL345, MPU6050 and both sensors together
+
+### Threads
+
+How to create and run multiple threads in Zephyr.
+
+- Semaphore: making threads take turns, with a basic example and a project that reads the ADXL345 and MPU6050 from two threads
 
 More topics will be added as I learn them.
-
-## Hardware
-
-- Board: STM32 Nucleo-F401RE
-- Sensors: ADXL345 accelerometer (I2C3) and MPU6050 accelerometer and gyroscope (I2C1)
-
-## Software
-
-- RTOS: Zephyr v4.4.2
-- Toolchain: Zephyr SDK 1.0.1
-- Build tool: west
-- Serial console: 115200 baud
-
-## How to build a project
-
-Each project folder has its own `CMakeLists.txt`, `prj.conf`, `app.overlay` and `src/main.c`. Build and flash it from inside the Zephyr workspace with:
-
-```bash
-cd ~/zephyr-work/zephyrproject
-west build -p always -b nucleo_f401re <path-to-project-folder>
-west flash
-```
-
-Then open the serial console at 115200 baud and press the reset button on the board to see the output.
-
-## Author
-
-Sanjay Senthil Kumar<br>
-II Year, Electronics and Communication Engineering (ECE)<br>
-Bannari Amman Institute of Technology
