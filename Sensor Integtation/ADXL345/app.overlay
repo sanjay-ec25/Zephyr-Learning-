@@ -1,0 +1,13 @@
+/ {
+	aliases {
+		adxl = &axl_node;
+	};
+};
+
+&i2c3 {
+	axl_node: axl345@53 {
+		compatible = "adi,adxl345";
+		reg = <0x53>;
+		status = "okay";
+	};
+};
