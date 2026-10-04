@@ -1,52 +1,48 @@
-# Threads in Zephyr RTOS
+# Zephyr Learning
 
-Practice notes on multi-threading with Zephyr RTOS, tested on the STM32 Nucleo-F401RE board.
+A repository of practice projects and notes from learning Zephyr RTOS. Everything here is built and tested on the STM32 Nucleo-F401RE board.
 
-## What is a thread?
+## About
 
-A thread is a function that runs on its own, at the same time as other functions. Zephyr switches between threads very quickly, so one program can do several jobs together, for example reading two sensors while also handling a button press.
+I am learning Zephyr step by step, starting with the basics of multi-threading and moving on to working with real sensors. Each topic has its own folder with working code, a short explanation, and the output I got on the board.
 
-Every thread has three things:
+## What is Zephyr?
 
-- An entry function: the code the thread runs.
-- A stack: private memory the thread uses for its variables and function calls.
-- A priority: decides which thread runs first when several are ready. A lower number means a higher priority.
+Zephyr is a small open-source real-time operating system (RTOS) for microcontrollers. It lets a program run several tasks at the same time using threads, and it provides ready-made drivers for hardware such as I2C, SPI, GPIO and sensors. Hardware is described in a devicetree file, so the same code can run on different boards.
 
-## Creating a thread
+## Topics
 
-The easiest way is K_THREAD_DEFINE. It creates the stack and the thread, and starts the thread when the board boots.
+Threads: how to create and run multiple threads in Zephyr.
 
-```c
-K_THREAD_DEFINE(my_tid, STACKSIZE, my_thread, NULL, NULL, NULL, PRIORITY, 0, 0);
-```
+- Semaphore: how to make threads take turns. It includes a basic example with two threads and a project that reads two accelerometers (ADXL345 and MPU6050) from two threads.
 
-What each part means:
+More topics will be added as I learn them.
 
-- my_tid: the name of the thread.
-- STACKSIZE: how much memory the thread gets, in bytes.
-- my_thread: the function the thread runs.
-- NULL, NULL, NULL: optional values passed to the function. We pass nothing.
-- PRIORITY: the thread's priority.
-- 0, 0: normal options, start immediately.
-
-## Example
-
-```c
-void my_thread(void)
-{
-	while (1) {
-		printk("Hello from my thread\n");
-		k_msleep(1000);
-	}
-}
-
-K_THREAD_DEFINE(my_tid, 1024, my_thread, NULL, NULL, NULL, 7, 0, 0);
-```
-
-This thread prints a message once every second, forever.
-
-## Hardware and software
+## Hardware
 
 - Board: STM32 Nucleo-F401RE
+- Sensors: ADXL345 accelerometer (I2C3) and MPU6050 accelerometer and gyroscope (I2C1)
+
+## Software
+
 - RTOS: Zephyr v4.4.2
-- Serial console speed: 115200 baud
+- Toolchain: Zephyr SDK 1.0.1
+- Build tool: west
+- Serial console: 115200 baud
+
+## How to build a project
+
+Each project folder has its own `CMakeLists.txt`, `prj.conf` and `src/main.c`. Build and flash it from the Zephyr workspace with:
+
+```bash
+west build -p always -b nucleo_f401re <path-to-project-folder>
+west flash
+```
+
+Then open the serial console at 115200 baud and press the reset button on the board to see the output.
+
+## Author
+
+Sanjay Senthil Kumar
+2nd Year, Electronics and Communication Engineering (ECE)
+Bannari Amman Institute of Technology
