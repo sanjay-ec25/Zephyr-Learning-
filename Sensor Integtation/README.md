@@ -22,7 +22,86 @@ Zephyr does not scan the hardware. You describe it in the devicetree. For an I2C
 
 The sensor is added as a node under its bus. In this project the nodes are placed in `app.overlay`, so Zephyr's own board files are not changed.
 
-Each node is given a label, such as `axl_node` or `mpu_node`, and an alias, such as `adxl` or `mpu`. The alias is the short name that the C code uses to find the sensor.
+## Devicetree terms explained
+
+**Node**
+
+A node is one block in the devicetree that describes one piece of hardware. The I2C bus is a node, and the sensor is a node inside it. A node looks like this:
+
+```dts
+mpu6050@68 {
+	compatible = "invensense,mpu6050";
+	reg = <0x68>;
+	status = "okay";
+};
+```
+
+The name before the `@` is a readable name for the device (`mpu6050`). The number after the `@` is the I2C address in hexadecimal (`68`). Nodes can sit inside other nodes, which is how the sensor sits inside its bus.
+
+**Property**
+
+A property is one line inside a node that gives a detail about the hardware. In the node above, `compatible`, `reg` and `status` are properties.
+
+- `compatible`: the name of the driver that should control this device. It must be spelled exactly right, or no driver is attached.
+- `reg`: the address of the device on its bus. For I2C this is the I2C address.
+- `status`: `"okay"` turns the node on. `"disabled"` turns it off.
+
+**Label**
+
+A label is a name written before the node, followed by a colon:
+
+```dts
+mpu_node: mpu6050@68 { ... };
+```
+
+Here `mpu_node` is the label. It is a handle for that node inside the devicetree files, so other parts of the devicetree can point to it with `&mpu_node`. Labels are used by Zephyr's devicetree system and by the alias line. The `&` means "refer to the node with this label".
+
+**Alias**
+
+An alias is a short, fixed name for a node, written in the `aliases` block:
+
+```dts
+/ {
+	aliases {
+		mpu = &mpu_node;
+	};
+};
+```
+
+This says: the name `mpu` refers to the node labelled `mpu_node`. The C code then finds the sensor by the alias:
+
+```c
+DEVICE_DT_GET(DT_ALIAS(mpu))
+```
+
+The advantage of an alias is that the code never needs to know the real node name or address. If the sensor moves to another bus, you change the devicetree and the alias still points to it, so `main.c` stays the same. Alias names use only lowercase letters, digits and dashes.
+
+**Compatible string**
+
+The compatible string connects a node to a driver. Each driver in Zephyr lists the compatible strings it handles. When the build finds a node whose compatible matches a driver, and that driver is enabled in `prj.conf`, Zephyr creates a device for it. Examples: `"adi,adxl345"` for the ADXL345 and `"invensense,mpu6050"` for the MPU6050.
+
+**Overlay**
+
+An overlay is an extra devicetree file that adds to or changes the board's devicetree, without editing the board file itself. `app.overlay` is picked up automatically when it is in the project folder.
+
+**Summary of the terms**
+
+| Term | What it is | Example |
+|---|---|---|
+| Node | A block describing one piece of hardware | `mpu6050@68 { ... };` |
+| Property | One detail inside a node | `reg = <0x68>;` |
+| Label | A name used to refer to a node in the devicetree | `mpu_node:` |
+| Alias | A short name the C code uses to find a node | `mpu = &mpu_node;` |
+| Compatible | The string that selects the driver | `"invensense,mpu6050"` |
+| Overlay | An extra file that adds nodes without editing the board file | `app.overlay` |
+
+**How they fit together**
+
+```
+alias  mpu  -->  label  mpu_node  -->  node  mpu6050@68  -->  driver (from compatible)
+```
+
+The C code asks for the alias. The alias points to the label. The label identifies the node. The compatible string in the node selects the driver, and the driver makes the working device.
 
 ## Step 2: Turn on the driver (prj.conf)
 
