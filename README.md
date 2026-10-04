@@ -43,6 +43,10 @@ Then open the serial console at 115200 baud and press the reset button on the bo
 
 ## Author
 
-Sanjay Senthil Kumar
-2nd Year, Electronics and Communication Engineering (ECE)
-Bannari Amman Institute of Technology
+- Sanjay Senthil Kumar
+- II Year, Electronics and Communication Engineering (ECE)
+- Bannari Amman Institute of Technology
+
+
+
+
